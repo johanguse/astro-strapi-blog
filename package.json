@@ -1,6 +1,7 @@
 {
   "scripts": {
     "frontend": "yarn dev --prefix ../frontend/",
+    "copytypes": "node copyTypes.js",
     "backend": "yarn dev --prefix ../backend/",
     "setup:frontend": "cd frontend && yarn",
     "setup:backend": "cd backend && yarn",
