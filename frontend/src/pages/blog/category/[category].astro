@@ -1,0 +1,93 @@
+---
+import BlogHeader from "@components/blog-header.astro";
+import MainLayout from "@layouts/main-layout.astro";
+import BlogGrid from "@components/BlogGrid.astro";
+import { capitalizer } from "@lib/utils";
+
+// Moved getStaticProps to the top of the module for clarity and consistency
+export async function getStaticProps({ params }) {
+  const response = await fetch("http://localhost:1337/graphql", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      query: `
+        query CategoryPosts($slug: String!) {
+          categories(filters: { slug: { eq: $slug } }) {
+            data {
+              attributes {
+                Name
+                slug
+                posts {
+                  data {
+                    id
+                    attributes {
+                      title
+                      content
+                      excerpt
+                      visibility
+                      readingTime
+                      slug
+                      createdAt
+                      updatedAt
+                      publishedAt
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      `,
+      variables: {
+        slug: params.slug
+      }
+    }),
+  });
+
+  if (!response.ok) {
+    throw new Error(`Failed to fetch posts, received status ${response.status}`);
+  }
+
+  const jsonResponse = await response.json();
+
+  // Handle potential errors in the GraphQL result
+  if (jsonResponse.errors) {
+    console.error('GraphQL errors:', jsonResponse.errors);
+    throw new Error('GraphQL errors occurred.');
+  }
+
+  const data = jsonResponse.data;
+  const categoryData = data.categories.data[0];
+
+  if (!categoryData) {
+    return { notFound: true };
+  }
+
+  const posts = categoryData.attributes.posts.data;
+
+  return {
+    props: {
+      posts,
+      category: categoryData.attributes.Name
+    },
+  };
+}
+
+// Extract the necessary props using Astro.props
+const { posts, category } = Astro.props;
+---
+
+<MainLayout
+  title={`AI | Blog`}
+  description={`All posts for ${category} category`}
+>
+  <section class="container py-10">
+    <BlogHeader title={`Posts by ${category} category`} />
+
+    <div
+        class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-9 md:gap-y-16 lg:gap-x-8"
+    >
+      aaa
+    </div>
+  </section>
+</MainLayout>

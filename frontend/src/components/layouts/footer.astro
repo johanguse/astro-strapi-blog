@@ -1,0 +1,32 @@
+---
+import { siteConfig } from "@config/site";
+import { cn } from "@lib/utils";
+
+type Props = {
+  className?: string;
+};
+
+const { className } = Astro.props;
+---
+
+<footer class={cn("border-t", className)}>
+  <div class="border-t py-4 text-sm">
+    <div class="container flex items-center justify-between">
+      <p class="text-left text-muted-foreground">
+        Built by{" "}
+        <a
+          href="https://johanguse.dev"
+          target="_blank"
+          rel="noreferrer"
+          class="font-medium underline underline-offset-4"
+        >
+          Johan Guse
+        </a>
+      </p>
+
+      <div class="flex items-center gap-3">
+        Copyright &copy; {new Date().getFullYear()}
+      </div>
+    </div>
+  </div>
+</footer>

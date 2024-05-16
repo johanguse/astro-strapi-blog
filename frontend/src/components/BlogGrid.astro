@@ -1,12 +1,14 @@
 ---
 import BlogGridItem from "./BlogGridItem.astro";
+import type { APIResponseCollection, APIResponseData } from "@interfaces/strapi";
+
 const { posts } = Astro.props;
 ---
 
-<div class="grid grid-cols-3 gap-6">
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-9 md:gap-y-11 lg:gap-y-16 lg:gap-x-8">
   {
-    posts.data && posts.data.length > 0
-      ? posts.data.map((post) => <BlogGridItem post={post} />)
-      : "No posts founds"
+    posts && posts.length > 0
+      ? posts.map((post) => <BlogGridItem post={post} />)
+      : "No posts found"
   }
 </div>

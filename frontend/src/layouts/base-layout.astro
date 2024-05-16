@@ -1,0 +1,23 @@
+---
+import BaseHead from "@components/layouts/base-head.astro";
+
+import { cn } from "@lib/utils";
+
+type Props = {
+  title: string;
+  description?: string;
+  bodyClass?: string;
+};
+
+const { title, description, bodyClass } = Astro.props;
+---
+
+<!doctype html>
+<html lang="en" class="scroll-smooth">
+  <head>
+    <BaseHead title={title} description={description} />
+  </head>
+  <body class={cn("flex flex-col min-h-screen", bodyClass)}>
+    <slot />
+  </body>
+</html>

@@ -1,14 +1,29 @@
 ---
+import { formatDate } from "@lib/utils";
 import { marked } from "marked";
-import { formatDistance, format } from 'date-fns';
 
 const { post } = Astro.props;
 
-const { featuredImage, title, content, author, readingTime, publishedAt } = post.attributes;
-const url = import.meta.env.STRAPI_URL;
+if (!post) {
+  throw new Error('Post is undefined');
+}
 
-const authorImage = author.data.attributes.bioImage.data.attributes.url || null;
-const postImage = featuredImage.data.attributes.url || null;
+// Destructure and provide default values using nullish coalescing
+const {
+  featuredImage = {},
+  title = '',
+  content = '',
+  author = {},
+  readingTime = '',
+  publishedAt = new Date(), // Default to current date if none provided
+} = post; // This line has changed to directly use 'post'
+
+// Construct full image URL or use placeholder if not available
+const url = import.meta.env.STRAPI_URL;
+const authorName = author?.data?.attributes.name ?? "Unknown Author";
+const authorImage = author?.data?.attributes.bioImage?.data?.attributes.url ?? "https://via.placeholder.com/1080";
+const postImageUrl = featuredImage?.data?.attributes.url ?? "https://via.placeholder.com/1080";
+const dt = new Date(publishedAt);
 ---
 
 
@@ -28,18 +43,16 @@ const postImage = featuredImage.data.attributes.url || null;
     <div class="text-gray-500 flex justify-center items-center space-x-2">
       <span class="flex space-x-2 items-center overflow-hidden">
         <img
-          class="inline-block h-8 w-8 rounded-full ring-2 ring-white"
-          src={authorImage
-            ? url + authorImage
-            : "https://via.placeholder.com/1080"}
-          alt="author picture"
-        />
-        <p class="font-medium text-xs text-gray-600 cursor-pointer">
-          {author?.name}
-        </p>
+        class="inline-block h-8 w-8 rounded-full ring-2 ring-white"
+        src={`${url}${authorImage}`}
+        alt={author.data?.attributes.bioImage.data?.attributes.alternativeText || 'Author picture'}
+      />
+      <p class="font-medium text-xs text-gray-600 cursor-pointer">
+        {authorName}
+      </p>
       </span>
       <span>&middot;</span>
-      <span>{format(new Date(publishedAt), 'MM/dd/yyyy')}</span>
+      <span>{formatDate(dt)}</span>
       <span>&middot;</span>
       <span>{readingTime}</span>
     </div>
@@ -47,9 +60,8 @@ const postImage = featuredImage.data.attributes.url || null;
   <div class="rounded-md h-56 w-full overflow-hidden">
     <img
       class="object-cover w-full h-full"
-      src={postImage
-        ? url + postImage
-        : "https://via.placeholder.com/1080"}
+      src={`${url}${postImageUrl}`}
+      alt={featuredImage.data?.attributes.alternativeText || 'Post image'}
     />
   </div>
   <article class=" prose max-w-full w-full my-4">

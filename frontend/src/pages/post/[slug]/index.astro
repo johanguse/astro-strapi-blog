@@ -1,0 +1,97 @@
+---
+// Import necessary components and configuration.
+import MainLayout from "@layouts/main-layout.astro";
+import SingleBlogItem from '@components/SingleBlogItem.astro';
+import { siteConfig } from "@config/site";
+
+// Extract the slug from the page params.
+const { slug } = Astro.params;
+
+// Function to fetch a single post data by slug.
+async function getPostData(slug: string) {
+  // Define the GraphQL query with variables.
+  const graphqlQuery = JSON.stringify({
+    query: `
+      query PostBySlug($slug: String!) {
+        posts(filters: { slug: { eq: $slug } }) {
+          data {
+            attributes {
+                title
+                content
+                excerpt
+                visibility
+                readingTime
+                slug
+                createdAt
+                updatedAt
+                publishedAt
+                featuredImage {
+                    data {
+                      id
+                      attributes {
+                          url
+                          alternativeText
+                      }
+                    }
+                }
+                author {
+                  data {
+                    id
+                    attributes {
+                      name
+                      bioImage {
+                        data {
+                          attributes {
+                              url
+                              alternativeText
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+            }
+          }
+        }
+      }
+    `,
+    variables: { slug }
+  });
+
+  try {
+    // Construct the full URL for the Strapi GraphQL endpoint.
+    const url = `${import.meta.env.STRAPI_URL}/graphql`;
+    const requestOptions = {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: graphqlQuery,
+    };
+
+    const response = await fetch(url, requestOptions);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    const result = await response.json();
+
+    // Check if the data is present and the array contains at least one item.
+    if (result?.data?.posts?.data?.[0]?.attributes) {
+      return result.data.posts.data[0].attributes;
+    } else {
+      // Handle the scenario where the data might be missing or the array is empty.
+      console.error('No post found for the provided slug:', slug);
+      return null;
+    }
+  } catch (error) {
+    // Catch and log any errors during the fetch process.
+    console.error('Failed to fetch post:', error);
+    return null;
+  }
+}
+
+// Fetch post data using the current slug param.
+const post = await getPostData(slug!);
+---
+
+<MainLayout title={post?.title || siteConfig.name}>
+  {post ? <SingleBlogItem post={post} /> : <p>Post not found</p>}
+</MainLayout>

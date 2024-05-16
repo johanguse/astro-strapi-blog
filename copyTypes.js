@@ -1,7 +1,7 @@
 const fs = require("fs");
 const path = require("path");
 
-const destinationFolder = "frontend/src/types";
+const destinationFolder = "frontend/src/types/strapi";
 
 const files = [
   {

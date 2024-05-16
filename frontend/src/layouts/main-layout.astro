@@ -1,0 +1,49 @@
+---
+import Footer from "../components/layouts/footer.astro";
+import Header from "../components/layouts/header.astro";
+import { cn } from "@lib/utils";
+import BaseLayout from "@layouts/base-layout.astro";
+import { ThemeToggle } from "@components/theme-toggle";
+import { siteConfig } from "@config/site";
+import { Icon } from "astro-icon/components";
+
+type Props = {
+  title: string;
+  description?: string;
+  mainClass?: string;
+};
+
+const { title, description, mainClass } = Astro.props;
+---
+
+<BaseLayout title={title} description={description}>
+  <Header className="border-b">
+
+    <div class="flex items-center gap-x-4" slot="right-header">
+      <a
+        href={siteConfig.links.github}
+        target="_blank"
+        rel="noreferrer"
+        aria-label="github"
+      >
+        <Icon name="github" class="size-5" />
+      </a>
+
+      <a
+        href={siteConfig.links.twitter}
+        target="_blank"
+        rel="noreferrer"
+        aria-label="twitter"
+      >
+        <Icon name="twitter" class="size-5" />
+      </a>
+      <ThemeToggle client:load />
+    </div>
+  </Header>
+
+  <main class={cn(mainClass)}>
+    <slot />
+  </main>
+
+  <Footer />
+</BaseLayout>

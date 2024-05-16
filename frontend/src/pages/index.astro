@@ -1,35 +1,105 @@
 ---
-import qs from "qs";
+import {
+  getAllBlogPosts,
+  getBlogPostBySlug
+} from "@lib/blogQueries";
 
-import Layout from "@layouts/Layout.astro";
+import BlogHeader from "@components/blog-header.astro";
+import MainLayout from "@layouts/main-layout.astro";
 import BlogGrid from "@components/BlogGrid.astro";
 
-let url = import.meta.env.STRAPI_URL + "/api/posts";
+import type { APIResponseCollection, APIResponseData } from "@interfaces/strapi";
 
-const query = qs.stringify({
-  populate: {
-    featuredImage: {
-      fields: ["name", "width", "height", "url"],
-    },
-    author: {
-      populate: {
-        bioImage: {
-          fields: ["name", "width", "height", "url"],
-        },
-      },
-    },
-    category: {
-      populate: true,
-    },
-  },
+const url = import.meta.env.STRAPI_URL + "/graphql";
+
+const query = `
+{
+  posts {
+    data {
+      attributes {
+        title
+        slug
+        excerpt
+        category {
+          data {
+            id
+            attributes {
+              name
+            }
+          }
+        }
+        author {
+          data {
+            id
+            attributes {
+              name
+              bioImage {
+                data {
+                  attributes {
+                    name
+                    width
+                    height
+                    url
+                  }
+                }
+              }
+            }
+          }
+        }
+        featuredImage {
+          data {
+            attributes {
+              name
+              width
+              height
+              url
+            }
+          }
+        }
+      }
+    }
+    meta {
+      pagination {
+        total
+        page
+        pageSize
+        pageCount
+      }
+    }
+  }
+}`;
+
+const response = await fetch(url, {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({
+    query: query,
+  }),
 });
 
-const posts = await fetch(url + "?" + query).then((response) =>
-  response.json()
-);
+//const { data } = await response.json();
+
+
+
+const { data } = (await response.json()) as APIResponseCollection<"api::post.post">;
+
+const postData = await getAllBlogPosts();
+
+const postDatadata = (await getBlogPostBySlug('first-one')) as APIResponseData<"api::post.post">;
+console.log(postData);
+console.log(postDatadata);
+
 ---
 
-<Layout title="Welcome to Astro.">
-  <BlogGrid posts={posts} />
-</Layout>
+<MainLayout title="Static Blog">
+  <BlogHeader />
+  <section class="container py-10">
+    <BlogGrid posts={data} />
+
+    {postData?.attributes && 
+    <BlogGrid post={postData} />
+    }
+
+  </section>
+</MainLayout>
 

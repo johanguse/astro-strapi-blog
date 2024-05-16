@@ -1,0 +1,57 @@
+---
+// Import the required library
+import qs from "qs";
+
+// Define the base URL and endpoint
+const baseURL = import.meta.env.STRAPI_URL;
+let url = `${baseURL}/api/categories`;
+
+// Construct the query using 'qs'
+const query = qs.stringify({
+  populate: {
+    category: true,
+  },
+}, {
+  encodeValuesOnly: true, // Encode values only to prevent encoding of keys
+});
+
+// Make the fetch request with the query string appended
+const response = await fetch(`${url}?${query}`);
+const json = await response.json();
+
+// Assuming the JSON structure has a data property which is an array of categories.
+const categories = json.data;
+
+// Log the first category if available for debugging
+//console.log(categories);
+
+---
+
+<div class="container flex items-start justify-between my-6 max-md:gap-4">
+  <div
+    class="flex items-center lg:w-full max-w-xs h-10 rounded-md px-2 lg:px-3 border text-muted-foreground"
+  >
+    <span class="text-sm ml-2 hidden lg:flex">Search (coming soon)</span>
+  </div>
+
+  {categories?.length > 0 ? (
+    <ul class="flex snap-x snap-mandatory overflow-auto items-center space-x-2 lg:space-x-2.5 pb-2">
+      <li class="flex-shrink-0 snap-start">
+        <a href={`/`}>
+          All posts
+        </a>
+      </li>
+      {categories.map((category) => (
+        <li key={category.id} class="flex-shrink-0 snap-start">
+          <a href={`/blog/category/${category.attributes.slug}`}>
+            {category.attributes.name}
+          </a>
+        </li>
+      ))}
+    </ul>
+  ) : (
+    <div>No categories found.</div> // Display a message when no data is available
+  )}
+</div>
+
+<hr class="mb-7" />
