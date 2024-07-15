@@ -8,6 +8,27 @@ import {
 } from "@lib/commonStrapiFilters";
 import { STRAPI_IMAGE_FRAGMENT } from "@lib/strapiFragments";
 
+export const GET_ALL_CATEGORIES = (strapiFilter: StrapiFilter) => `
+query {
+  categories {
+    data {
+      id
+      attributes {
+        name
+        slug
+      }
+    }
+    meta {
+      pagination {
+        total
+        page
+        pageSize
+        pageCount
+      }
+    }
+  }
+}`;
+
 export const GET_ALL_BLOG_POSTS = (strapiFilter: StrapiFilter) => `query {
   posts {
     data {
@@ -176,6 +197,13 @@ export async function getBlogPostBySlug(): Promise<
   return safeReturnStrapiEntities(apiResponse);
 }
 */
+export async function getAllCategories(): Promise<APIResponseData<"api::category.category">[]> {
+  const filter = new StrapiFilter(true, []);
+  const apiResponse = (await strapiGraphQLCall(GET_ALL_CATEGORIES(filter)))
+    ?.categories as APIResponseCollection<"api::category.category">;
+  return safeReturnStrapiEntities(apiResponse);
+}
+
 export async function getAllBlogPosts(): Promise<APIResponseData<"api::post.post"> | null> {
   const filter = new StrapiFilter(true, []);
   const apiResponse = (await strapiGraphQLCall(GET_ALL_BLOG_POSTS(filter)))
