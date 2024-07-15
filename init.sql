@@ -1795,7 +1795,7 @@ COPY public.admin_roles (id, name, code, description, created_at, updated_at, cr
 --
 
 COPY public.admin_users (id, firstname, lastname, username, email, password, reset_password_token, registration_token, is_active, blocked, prefered_language, created_at, updated_at, created_by_id, updated_by_id) FROM stdin;
-1	Johan	Guse	\N	johanguse@gmail.com	$2a$10$WzbgW63xdk6mVZJl/PfdiebFjjmYTjPSqVQys7H0RKH6w2sc4z99O	\N	\N	t	f	\N	2024-05-09 15:09:49.805	2024-05-09 15:09:49.805	\N	\N
+1	Johan	Guse	\N	johanguse@gmail.com	$2a$10$jmGIRLsKW4cNGOPXI8EtluAVweuzumIJdUV6DfWgV8QzfYAln2FiC	\N	\N	t	f	\N	2024-05-09 15:09:49.805	2024-05-09 15:09:49.805	\N	\N
 \.
 
 
