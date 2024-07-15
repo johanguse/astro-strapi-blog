@@ -802,7 +802,7 @@ export interface ApiAuthorAuthor extends Schema.CollectionType {
   attributes: {
     name: Attribute.String;
     bio: Attribute.Text;
-    bioImage: Attribute.Media;
+    bioImage: Attribute.Media<'images' | 'files' | 'videos' | 'audios'>;
     posts: Attribute.Relation<
       'api::author.author',
       'oneToMany',
@@ -879,7 +879,7 @@ export interface ApiPostPost extends Schema.CollectionType {
     content: Attribute.RichText;
     excerpt: Attribute.Text;
     visibility: Attribute.Boolean;
-    featuredImage: Attribute.Media;
+    featuredImage: Attribute.Media<'images' | 'files' | 'videos' | 'audios'>;
     readingTime: Attribute.String;
     category: Attribute.Relation<
       'api::post.post',
